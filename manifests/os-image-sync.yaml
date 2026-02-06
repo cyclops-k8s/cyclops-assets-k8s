@@ -1,0 +1,39 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: os-image-sync
+  namespace: cyclops-assets
+spec:
+  schedule: "0 0 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+          - name: image-sync
+            image: ubuntu:latest
+            envFrom:
+            - configMapRef:
+                name: os-images
+            command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+              mkdir -p /assets/os-images/new
+              apt update && apt install -y curl
+              cd /assets/os-images/new
+              # Download desired OS assets/os-images
+              for url in $(echo "$urls"); do
+                echo "Downloading $url"
+                curl -O "$url"
+              done
+              mv /assets/os-images/new/* /assets/os-images/
+            volumeMounts:
+            - mountPath: /assets
+              name: assets
+          volumes:
+          - name: assets
+            persistentVolumeClaim:
+              claimName: assets

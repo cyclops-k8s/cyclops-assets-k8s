@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mirror-quay-io
+  namespace: cyclops-assets
+spec:
+  selector:
+    matchLabels:
+      app: mirror-quay-io
+  template:
+    metadata:
+      labels:
+        app: mirror-quay-io
+    spec:
+      containers:
+      - name: mirror
+        image: registry:3
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+          requests:
+            memory: "64Mi"
+            cpu: "10m"
+        ports:
+        - containerPort: 5000
+        volumeMounts:
+        - mountPath: /var/lib/registry
+          name: registry-storage
+        - mountPath: /etc/distribution
+          name: registry-config
+      volumes:
+      - name: registry-storage
+        persistentVolumeClaim:
+          claimName: mirror-quay-io
+      - name: registry-config
+        configMap:
+          name: mirror-quay-io

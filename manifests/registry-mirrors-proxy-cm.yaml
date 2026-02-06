@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: registry-mirrors-proxy
+  namespace: cyclops-assets
+data:
+  mirrors.conf: |
+    upstream docker_io {
+      server mirror-docker-io:5000;
+    }
+    upstream quay_io {
+      server mirror-quay-io:5000;
+    }
+    upstream registry_k8s_io {
+      server mirror-registry-k8s-io:5000;
+    }
+
+    map $arg_ns $node {
+      "docker.io" docker_io;
+      "quay.io" quay_io;
+      "registry.k8s.io" registry_k8s_io;
+    }
+    server {
+      listen 0.0.0.0:80;
+
+      location / {
+        proxy_pass http://$node;
+      }
+    }
+

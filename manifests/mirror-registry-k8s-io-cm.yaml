@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mirror-registry-k8s-io
+  namespace: cyclops-assets
+data:
+  config.yml: |
+    version: 0.1
+    log:
+      fields:
+        service: registry
+    storage:
+      filesystem:
+        rootdirectory: /var/lib/registry
+    http:
+      addr: :5000
+      headers:
+        X-Content-Type-Options: [nosniff]
+    delete:
+      enabled: true
+    proxy:
+      remoteurl: "https://registry.k8s.io"
+      ttl: 336h0m0s
