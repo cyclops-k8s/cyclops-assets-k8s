@@ -21,7 +21,12 @@ data:
       "registry.k8s.io" registry_k8s_io;
     }
     server {
-      listen 0.0.0.0:80;
+      listen 80;
+      listen 443 ssl;
+      server_name registry-mirrors.cyclops-assets;
+
+      ssl_certificate     /etc/nginx/ssl/tls.crt;
+      ssl_certificate_key /etc/nginx/ssl/tls.key;
 
       location / {
         proxy_pass http://$node;

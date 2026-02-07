@@ -1,6 +1,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  annotations:
+    reloader.stakater.com/auto: "true"
   name: registry-mirrors
   namespace: cyclops-assets
 spec:
@@ -27,17 +29,25 @@ spec:
         image: nginx:latest
         resources:
           limits:
-            memory: "50Mi"
+            memory: "100Mi"
             cpu: "1500m"
           requests:
             memory: "20Mi"
             cpu: "10m"
         ports:
         - containerPort: 80
+          name: http
+        - containerPort: 443
+          name: https
         volumeMounts:
         - mountPath: /etc/nginx/conf.d
           name: sites
+        - mountPath: /etc/nginx/ssl
+          name: ssl-certs
       volumes:
       - name: sites
         configMap:
           name: registry-mirrors-proxy
+      - name: ssl-certs
+        secret:
+          secretName: registry-mirrors-cyclops-tls
