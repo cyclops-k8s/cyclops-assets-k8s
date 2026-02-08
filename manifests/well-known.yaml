@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: well-known
+data:
+  key: |-
+    {
+        "keys": [
+            {
+                "kty": "RSA",
+                "e": "AQAB",
+                "use": "sig",
+                "kid": "c721fz1mcZX6HbkGbO2arZXrnTEY-qDDTTrzvknX0Fo",
+                "alg": "RS512",
+                "n": "2JIFaelPafGfWPZPqT_cbnHFKHY_IzkbeE0ndluEPyM0Asfr2JdsvjPWl2xnKMefC7I8ad4P40HK9sUxxn9H_k7oLQrnfvZ2ZVYzRXz6lhGtIdNh8EyOi2YfkZuC8GVlEue9lOduencO6zEy1rdH8BeuP7je7XAzQm9b4OzCiV7zz9M5-00nZKWuPfghTtVAYfSQ3jszu-KiNb4TSmT7iJTKMvqP5iY6N7PTJqbfbblB1fjbsyaPQZpZb7NnjpzgZO_uaRqr6kKAUijd81uHV3E4EXYivICL6pvjCJqm2Wt2xt8aumBTVYAihVVAPSK1FVZjVUj_odWWIsY7ltFtow"
+            }
+        ]
+    }
+  openid-configuration: |-
+    {
+        "jwks_uri": "https://assets.cyclops-assets/.well-known/keys",
+        "issuer": "https://assets.cyclops-assets"
+    }
