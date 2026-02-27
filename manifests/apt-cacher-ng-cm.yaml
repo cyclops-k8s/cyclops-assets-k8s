@@ -6,4 +6,4 @@ metadata:
 data:
   cyclops.conf: |
     PassThroughPattern: .*
-    PfilePatternEx: gpg|.*Release.key.*
+    VfilePatternEx: gpg|.*Release.key.*|.*metalink.*
