@@ -4,10 +4,10 @@ metadata:
   name: mirror-quay-io
   namespace: cyclops-assets
 spec:
+  accessModes:
+  - ReadWriteMany
   resources:
     requests:
       storage: 50Gi
+  storageClassName: cyclops-fs
   volumeMode: Filesystem
-  accessModes:
-  - ReadWriteMany
-  storageClassName: ceph-filesystem
