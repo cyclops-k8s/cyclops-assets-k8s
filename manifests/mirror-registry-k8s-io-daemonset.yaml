@@ -1,6 +1,8 @@
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
+  annotations:
+    reloader.stakater.com/auto: "true"
   name: mirror-registry-k8s-io
   namespace: cyclops-assets
 spec:
