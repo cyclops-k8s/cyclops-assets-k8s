@@ -31,16 +31,16 @@ jobs:
 
     - name: Create temporary Root CA Certificate and Squid tls Certificates
       run: |
-        mkdir /tmp/squid-certs
-        openssl genrsa -out /tmp/squid-certs/ca.key 4096
-        openssl req -x509 -new -key /tmp/squid-certs/ca.key -days 1 -out /tmp/squid-certs/ca.crt -subj "/CN=Temporary Root CA"
-        openssl genrsa -out /tmp/squid-certs/tls.key 4096
-        openssl req -new -key /tmp/squid-certs/tls.key -out /tmp/squid-certs/tls.csr -subj "/CN=Temporary Squid Certificate"
-        openssl x509 -req -in /tmp/squid-certs/tls.csr -CA /tmp/squid-certs/ca.crt -CAkey /tmp/squid-certs/ca.key -out /tmp/squid-certs/tls.crt -days 1
-        chmod -R go+r /tmp/squid-certs
+        mkdir squid-certs
+        openssl genrsa -out squid-certs/ca.key 4096
+        openssl req -x509 -new -key squid-certs/ca.key -days 1 -out squid-certs/ca.crt -subj "/CN=Temporary Root CA"
+        openssl genrsa -out squid-certs/tls.key 4096
+        openssl req -new -key squid-certs/tls.key -out squid-certs/tls.csr -subj "/CN=Temporary Squid Certificate"
+        openssl x509 -req -in squid-certs/tls.csr -CA squid-certs/ca.crt -CAkey squid-certs/ca.key -out squid-certs/tls.crt -days 1
+        chmod -R go+r squid-certs
 
     - name: Get Squid Config
-      run: awk '/^  squid.conf:/ {flag=1; next} /^[[:space:]]{0,2}[^[:space:]]/ {flag=0} flag' "${MANIFEST}" | sed 's/    //g' > /tmp/squid-certs/temporary_squid.conf
+      run: awk '/^  squid.conf:/ {flag=1; next} /^[[:space:]]{0,2}[^[:space:]]/ {flag=0} flag' "${MANIFEST}" | sed 's/    //g' > squid-certs/temporary_squid.conf
 
     - name: Validate and Lint Squid Config
-      run: docker run --cap-drop ALL --entrypoint squid --read-only --rm --mount type=bind,source=/tmp/squid-certs,target=/squid-certs quay.io/cyclops-k8s/squid:latest -k parse -f /squid-certs/temporary_squid.conf
+      run: docker run --cap-drop ALL --entrypoint squid --read-only --rm --mount type=bind,source=$(pwd)/squid-certs,target=/squid-certs quay.io/cyclops-k8s/squid:latest -k parse -f /squid-certs/temporary_squid.conf
