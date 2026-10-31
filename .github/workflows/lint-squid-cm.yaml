@@ -25,9 +25,6 @@ jobs:
     runs-on:
       group: Default
 
-    container:
-      image: quay.io/cyclops-k8s/squid:latest
-
     steps:
     - name: Check out repository
       uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
