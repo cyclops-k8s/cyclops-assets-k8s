@@ -1,0 +1,42 @@
+---
+name: Lint squid-cm.yaml
+run-name: Lint squid-cm.yaml
+
+on:
+  push:
+    branches:
+    - main
+    paths:
+      - manifests/squid-cm.yaml
+  pull_request:
+    paths:
+      - manifests/squid-cm.yaml
+  workflow_dispatch:
+
+env:
+  MANIFEST: manifests/squid-cm.yaml
+
+permissions:
+  contents: read
+
+jobs:
+  parse-squid-conf:
+    name: Validate squid.conf (squid -N -c)
+    runs-on: quay.io/cyclops-k8s/squid:latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Create temporary Root CA Certificate and Squid tls Certificates
+        run: |
+          openssl genrsa -out /tmp/ca.key 4096
+          openssl req -x509 -new -key /tmp/ca.key -days 1 -out /tmp/ca.crt -subj "/CN=Temporary Root CA"
+          openssl genrsa -out /tmp/tls.key 4096
+          openssl req -new -key /tmp/tls.key -out /tmp/tls.csr -subj "/CN=Temporary Squid Certificate"
+          openssl x509 -req -in /tmp/tls.csr -CA /tmp/ca.crt -CAkey /tmp/ca.key -out /tmp/tls.crt -days 1
+
+      - name: Get Squid Config
+        run: awk '/^  squid.conf:/ {flag=1; next} /^[[:space:]]{0,2}[^[:space:]]/ {flag=0} flag' "${MANIFEST}" | sed 's/    //g' | sed 's@/squid-certs/@/tmp/@g' > /tmp/temporary_squid.conf
+
+      - name: Validate and Lint Squid Config
+        run: squid -k parse -f /tmp/temporary_squid.conf

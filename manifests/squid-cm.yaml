@@ -15,28 +15,32 @@ data:
     http_port 8080 ssl-bump generate-host-certificates=on tls-cert=/squid-certs/tls.crt tls-key=/squid-certs/tls.key tls-default-ca=on
 
     # user visible name
-    visible_hostname squid-deb-proxy
+    visible_hostname squid-proxy
 
     # we need a big cache, some packages are huge
     maximum_object_size 1024 MB
 
     # use a different dir than stock squid and default to 45G
-    cache_dir aufs /squid-cache 40000 16 256
+    cache_dir aufs /squid-cache 46080 16 256
 
-    cache_access_log /var/log/squid/access.log
-    cache_log /var/log/squid/cache.log
-    cache_store_log /var/log/squid/store.log
+    # cache_access_log /var/log/squid/access.log
+    # cache_log /var/log/squid/cache.log
+    # cache_store_log /var/log/squid/store.log
+    cache_access_log /dev/null
+    cache_log /dev/null
+    cache_store_log /dev/null
 
     # tweaks to speed things up
     cache_mem 512 MB
-    maximum_object_size_in_memory 10240 KB
+    maximum_object_size_in_memory 10 MB
 
     # pid
     pid_filename /run/squid.pid
 
     # This section is from: https://github.com/drosskopp/squid-cache/blob/main/squid.conf
     # cache repodata only few minutes and then query parent whether it is fresh
-    refresh_pattern /XMLRPC/GET-REQ/.*/repodata/.*$ 0 1% 1440 ignore-no-cache reload-into-ims refresh-ims
+    refresh_pattern .*\/repodata\/.*$ 0 1% 1440 ignore-no-store reload-into-ims refresh-ims
+    refresh_pattern .*\/comps.xml$ 1440 0% 1440 ignore-no-store reload-into-ims refresh-ims
     refresh_pattern  \.rpm$  129600 100% 129600 override-expire override-lastmod ignore-reload reload-into-ims
     # refresh_pattern . 0 100% 525960
 
