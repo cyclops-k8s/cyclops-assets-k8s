@@ -47,7 +47,7 @@ jobs:
         openssl x509 -req -in "${SQUID_CERTS_DIR}/tls.csr" -CA "${SQUID_CERTS_DIR}/ca.crt" -CAkey "${SQUID_CERTS_DIR}/ca.key" -out "${SQUID_CERTS_DIR}/tls.crt" -days 1
 
     - name: Extract Squid Config from ConfigMap
-      run: awk '/^  squid.conf:/ {flag=1; next} /^[[:space:]]{0,2}[^[:space:]]/ {flag=0} flag' "${MANIFEST}" | sed 's/    //g' > "${SQUID_CERTS_DIR}/temporary_squid.conf"
+      run: awk '/^  squid.conf:/ {flag=1; next} /^[[:space:]]{0,2}[^[:space:]]/ {flag=0} flag' "${MANIFEST}" | sed 's/^    //g' > "${SQUID_CERTS_DIR}/temporary_squid.conf"
 
     - name: Validate and Lint Squid Config
       run: |
