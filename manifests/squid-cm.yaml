@@ -23,12 +23,13 @@ data:
     # use a different dir than stock squid and default to 45G
     cache_dir aufs /squid-cache 46080 16 256
 
-    # cache_access_log /var/log/squid/access.log
-    # cache_log /var/log/squid/cache.log
-    # cache_store_log /var/log/squid/store.log
-    cache_access_log /dev/null
-    cache_log /dev/null
-    cache_store_log /dev/null
+    pid_filename /dev/shm/squid.pid
+    buffered_logs on
+    logfile_rotate 0
+    logformat combined
+    access_log /dev/stdout
+    cache_log /dev/stdout
+    cache_store_log /dev/stdout
 
     # tweaks to speed things up
     cache_mem 512 MB
