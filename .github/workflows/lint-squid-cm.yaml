@@ -37,10 +37,11 @@ jobs:
         openssl genrsa -out squid-certs/tls.key 4096
         openssl req -new -key squid-certs/tls.key -out squid-certs/tls.csr -subj "/CN=Temporary Squid Certificate"
         openssl x509 -req -in squid-certs/tls.csr -CA squid-certs/ca.crt -CAkey squid-certs/ca.key -out squid-certs/tls.crt -days 1
-        chmod -R go+r squid-certs
 
     - name: Get Squid Config
       run: awk '/^  squid.conf:/ {flag=1; next} /^[[:space:]]{0,2}[^[:space:]]/ {flag=0} flag' "${MANIFEST}" | sed 's/    //g' > squid-certs/temporary_squid.conf
 
     - name: Validate and Lint Squid Config
-      run: docker run --cap-drop ALL --entrypoint squid --read-only --rm --mount type=bind,source=$(pwd)/squid-certs,target=/squid-certs quay.io/cyclops-k8s/squid:latest -k parse -f /squid-certs/temporary_squid.conf
+      run: |
+        chmod -R go+r squid-certs
+        docker run --cap-drop ALL --entrypoint squid --read-only --rm --mount type=bind,source=$(pwd)/squid-certs,target=/squid-certs quay.io/cyclops-k8s/squid:latest -k parse -f /squid-certs/temporary_squid.conf

@@ -37,10 +37,11 @@ data:
     # pid
     pid_filename /run/squid.pid
 
-    # This section is from: https://github.com/drosskopp/squid-cache/blob/main/squid.conf
+    # This section is originally from:
+    #   https://github.com/drosskopp/squid-cache/blob/main/squid.conf
     # cache repodata only few minutes and then query parent whether it is fresh
-    refresh_pattern .*\/repodata\/.*$ 0 1% 1440 ignore-no-store reload-into-ims refresh-ims
-    refresh_pattern .*\/comps.xml$ 1440 0% 1440 ignore-no-store reload-into-ims refresh-ims
+    refresh_pattern \/repodata\/.*$ 0 1% 1440 ignore-no-store reload-into-ims refresh-ims
+    refresh_pattern \/comps.xml$ 0 1% 1440 ignore-no-store reload-into-ims refresh-ims
     refresh_pattern  \.rpm$  129600 100% 129600 override-expire override-lastmod ignore-reload reload-into-ims
     # refresh_pattern . 0 100% 525960
 
